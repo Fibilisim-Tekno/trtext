@@ -1,6 +1,6 @@
 {
 	"name": "trtext",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Turkish-correct lowercase, uppercase, folding, slugs and alphabet sorting. Zero dependencies, no ICU required.",
 	"keywords": [
 		"turkish",
@@ -17,6 +17,14 @@
 		"i18n"
 	],
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Fibilisim-Tekno/trtext.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Fibilisim-Tekno/trtext/issues"
+	},
+	"homepage": "https://github.com/Fibilisim-Tekno/trtext#readme",
 	"type": "module",
 	"exports": {
 		".": {

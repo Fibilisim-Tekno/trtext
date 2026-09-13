@@ -29,10 +29,33 @@ compiler](https://news.ycombinator.com/item?id=45559767),
 usual symptom is an identifier, class name, file extension or user login that
 silently stops matching on a Turkish machine.
 
-`toLocaleLowerCase("tr")` fixes the first line above, but it depends on the
-host's ICU build (absent in some minimal Node builds, React Native and older
-embedded runtimes) and it still leaves the combining dot behind on the second
-line. This package is explicit and produces identical results everywhere.
+## What about `toLocaleLowerCase("tr")`?
+
+**It works, and you should use it when you can.** On a runtime that ships
+Turkish ICU data it is correct, including the awkward cases:
+
+```js
+"İ".toLocaleLowerCase("tr") // "i" — one character, no combining dot
+"ISTANBUL".toLocaleLowerCase("tr") // "ıstanbul"
+```
+
+So this package is not here to fix `toLocaleLowerCase`. It exists for the cases
+around it:
+
+- **Runtimes without Turkish ICU data.** `toLocaleLowerCase("tr")` silently
+  falls back to root-locale behaviour on a `small-icu` Node build, in some
+  React Native setups and on older embedded runtimes. These functions carry
+  their own mapping table, so the result never depends on how the host was
+  compiled. Check what you have with
+  `Intl.Collator.supportedLocalesOf(["tr"])`.
+- **Everything `toLocaleLowerCase` does not do:** diacritic folding for search,
+  ASCII transliteration, URL slugs and Turkish alphabet collation — the
+  operations below.
+- **Explicitness.** `foldTr(a) === foldTr(b)` is a deliberate comparison key,
+  not a locale-tag argument that a refactor can drop.
+
+If you already rely on ICU being present and you only need lowercasing, the
+built-in is the right call and you do not need a dependency for it.
 
 ## Install
 
@@ -100,8 +123,8 @@ sort after it in code point order, so the ordering is always deterministic.
 ## Related work
 
 - [`Intl.Collator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator)
-  and `toLocaleLowerCase("tr")` — use these when you can rely on ICU being
-  present and you do not mind the combining-dot result.
+  and `toLocaleLowerCase("tr")` — the built-ins. Correct where ICU Turkish data
+  is available; see the section above.
 - [`slugify`](https://www.npmjs.com/package/slugify) — a general-purpose
   slugger with a much wider character map, but it lowercases with the default
   locale, so dotted and dotless `i` get mangled.
@@ -131,12 +154,25 @@ JavaScript'in `toLowerCase()` fonksiyonu bilinçli olarak yerel ayardan
 bağımsızdır, bu yüzden Türkçede hatalı çalışır: `"I".toLowerCase()` sonucu
 `"ı"` yerine `"i"` verir, `"İ".toLowerCase()` ise temiz bir `"i"` yerine
 üzerinde birleşen nokta taşıyan iki karakterlik bir dize döndürür.
-`toLocaleLowerCase("tr")` ilk sorunu çözer ama çalıştığı ortamdaki ICU verisine
-bağlıdır ve ikinci sorunu çözmez.
 
-En sık görülen sonuç: kullanıcı `istanbul` yazıyor, veritabanındaki `İSTANBUL`
-kaydı bulunamıyor. `foldTr` her iki tarafı tek bir karşılaştırma anahtarına
-indirger ve sorun ortadan kalkar.
+### `toLocaleLowerCase("tr")` ne olacak?
+
+**O doğru çalışıyor** — Türkçe ICU verisi bulunan bir ortamda `"İ"` için tek
+karakterlik temiz bir `"i"` döndürür. Bu paket onu düzeltmek için değil,
+çevresindeki boşluklar için var: ICU verisi olmayan ortamlarda (`small-icu`
+Node derlemeleri, bazı React Native kurulumları) sonucun ortama göre
+değişmemesi için ve `toLocaleLowerCase`'in hiç yapmadığı işler için: arama
+için diyakritik katlama, ASCII çevirisi, URL slug'ı ve Türk alfabesi
+sıralaması.
+
+Elinizde ICU varsa ve yalnızca küçük harfe çevirmek istiyorsanız, doğrusu
+dildeki hazır fonksiyonu kullanmaktır; buna bağımlılık eklemeniz gerekmez.
+
+### En sık görülen sorun
+
+Kullanıcı `istanbul` yazıyor, veritabanındaki `İSTANBUL` kaydı bulunamıyor.
+`foldTr` her iki tarafı tek bir karşılaştırma anahtarına indirger ve sorun
+ortadan kalkar.
 
 ### Kurulum ve kullanım
 
