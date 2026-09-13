@@ -1,5 +1,11 @@
 # trtext
 
+[![npm version](https://img.shields.io/npm/v/trtext.svg)](https://www.npmjs.com/package/trtext)
+[![npm downloads](https://img.shields.io/npm/dm/trtext.svg)](https://www.npmjs.com/package/trtext)
+[![CI](https://github.com/Fibilisim-Tekno/trtext/actions/workflows/ci.yml/badge.svg)](https://github.com/Fibilisim-Tekno/trtext/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/trtext.svg)](./LICENSE)
+[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](./package.json)
+
 Turkish-correct string operations for JavaScript and TypeScript. Zero
 dependencies, no ICU data required, pure functions only.
 
